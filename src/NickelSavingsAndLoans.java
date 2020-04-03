@@ -1,5 +1,7 @@
-public class Main {
+public class MainConsole {
     public static void Main(String[] args) {
 
     }
+
+
 }
