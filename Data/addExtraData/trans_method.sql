@@ -1,0 +1,10 @@
+insert into trans_method (method_id, branch_id) values (41, 16);
+insert into trans_method (method_id, branch_id) values (42, 17);
+insert into trans_method (method_id, branch_id) values (43, 18);
+insert into trans_method (method_id, branch_id) values (44, 19);
+insert into trans_method (method_id, branch_id) values (45, 20);
+insert into trans_method (method_id, branch_id) values (46, 21);
+insert into trans_method (method_id, branch_id) values (47, 22);
+insert into trans_method (method_id, branch_id) values (48, 23);
+insert into trans_method (method_id, branch_id) values (49, 24);
+insert into trans_method (method_id, branch_id) values (50, 25);

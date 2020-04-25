@@ -1,0 +1,10 @@
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (26, '0849', 'Bluejay', 'West Palm Beach', 'Florida', '33405');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (27, '67', 'Sunbrook', 'Mesa', 'Arizona', '85205');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (28, '4', 'Lunder', 'New Orleans', 'Louisiana', '70124');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (29, '9930', 'Mosinee', 'Milwaukee', 'Wisconsin', '53210');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (30, '2877', '3rd', 'Longview', 'Texas', '75605');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (31, '14721', 'Chive', 'Washington', 'District of Columbia', '20404');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (32, '5', 'Tennessee', 'Boise', 'Idaho', '83757');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (33, '6529', 'Washington', 'Louisville', 'Kentucky', '40250');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (34, '562', 'Tennyson', 'Salt Lake City', 'Utah', '84120');
+insert into branch (branch_id, street_number, street_name, city, state, zip) values (35, '6', 'Schurz', 'Irving', 'Texas', '75062');

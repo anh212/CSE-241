@@ -1,0 +1,10 @@
+insert into atm (method_id) values (41);
+insert into atm (method_id) values (42);
+insert into atm (method_id) values (43);
+insert into atm (method_id) values (44);
+insert into atm (method_id) values (45);
+insert into atm (method_id) values (46);
+insert into atm (method_id) values (47);
+insert into atm (method_id) values (48);
+insert into atm (method_id) values (49);
+insert into atm (method_id) values (50);
