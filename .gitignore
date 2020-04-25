@@ -7,4 +7,5 @@
 *.iml
 
 # .class files
+/out
 *.class
