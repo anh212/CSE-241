@@ -1,10 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
-import java.util.function.DoubleToIntFunction;
-import java.util.regex.Pattern;
 
 public class Input {
 
@@ -59,7 +55,7 @@ public class Input {
 
             //Matching XXX-XXX-XXXX Format through regex expression
             if (phoneNum.matches("(?:\\d{3}-){2}\\d{4}")) {
-                return phoneNum;
+                return phoneNum.trim();
             }
 
             System.out.println("The phone number is in the wrong format: Please try again");
@@ -75,7 +71,7 @@ public class Input {
 
             //Matching mm/dd/yyyy date format using regex expression
             if (date.matches("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$")) {
-                return date;
+                return date.trim();
             }
 
             System.out.println("The date is in the wrong format: Please try again");

@@ -2,7 +2,6 @@ import java.io.Console;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 public class NickelSavingsAndLoans {
     public static void main(String[] args) {
@@ -15,10 +14,9 @@ public class NickelSavingsAndLoans {
         }
 
         //Main connection used through out application
-        Connection conn = null;
+        Connection conn;
 
         Console console = System.console();
-        Scanner scan = new Scanner(System.in);
 
         //Asking for database credentials for authentication
         while(true) {
@@ -27,7 +25,7 @@ public class NickelSavingsAndLoans {
                 String password = "";
 
                 System.out.println("Please enter username:");
-                user = scan.nextLine();
+                user = Input.getString();
 
                 System.out.println("Please enter password for " + user + ":");
                 password = String.valueOf(console.readPassword());
@@ -40,20 +38,53 @@ public class NickelSavingsAndLoans {
             }
         }
 
+        //If user causes SIGTERM to be triggered (Ex. pressing Ctrl-C to end program)
+        //database will get disconnected
+//        Runtime.getRuntime().addShutdownHook(new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+//                    conn.close();
+//                    System.out.println("Database disconnected");
+//                } catch (SQLException ex) {
+//                    System.out.println("problem disconnecting");
+//                }
+//            }
+//        });
+
+
+
+        while(true) {
+            //Prompt user to Main Menu
+            System.out.println("Main Menu");
+            System.out.println("Please enter the number corresponding to your role");
+            System.out.println("[1] Bank Management");
+            System.out.println("[2] Customer");
+            System.out.println("[3] Exit Interface");
+
+            String input = Input.getString();
+
+            //Go to interface that user selects
+            switch(input) {
+                case "1":
+                    BankManagementInterface.Interface(conn);
+                    break;
+                case "2":
+                    CustomerInterface.Interface(conn);
+                    break;
+                case "3":
+                    return;
+                default:
+                    System.out.println("Invalid command");
+            }
+        }
+    }
+
+    public void disconnect(Connection conn) {
         try {
             conn.close();
         } catch (SQLException ex) {
-            System.out.println("problem disconncting");
-        }
-
-        //Prompt user to Main Menu
-        System.out.println("Main Menu");
-        System.out.println("Please enter the number corresponding to your role");
-        System.out.println("[1] Bank Management");
-        System.out.println("[2] Customer");
-
-        while(true) {
-
+            System.out.println("problem disconnecting");
         }
     }
 }
