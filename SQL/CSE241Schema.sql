@@ -88,7 +88,9 @@ create table credit_card (
     credit_limit number(8,2),
     balance number(8,2),
     balance_due number(8,2),
-    primary key (credit_id)
+    primary key (credit_id),
+    check (balance <= credit_limit),
+    check (balance_due <= credit_limit)
 );
 
 -- purchases
