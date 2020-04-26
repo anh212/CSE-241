@@ -245,7 +245,9 @@ create table pay_loan (
 create table deposit (
     trans_id number(8),
     method_id number(6),
-    primary key (trans_id, method_id),
+    account_id number(8),
+    primary key (trans_id, method_id, account_id),
+    foreign key (account_id) references account on delete cascade,
     foreign key (trans_id) references transactions on delete cascade,
     foreign key (method_id) references trans_method(method_id) on delete set null
 );
@@ -254,7 +256,9 @@ create table deposit (
 create table withdrawal (
     trans_id number(8),
     method_id number(6),
-    primary key (trans_id, method_id),
+    account_id number(8),
+    primary key (trans_id, method_id, account_id),
+    foreign key (account_id) references account on delete cascade,
     foreign key (trans_id) references transactions on delete cascade,
     foreign key (method_id) references trans_method(method_id) on delete set null
 );
