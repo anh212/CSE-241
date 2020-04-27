@@ -138,7 +138,111 @@ public class AccountInterface {
             }
         }
 
-        System.out.println("Transaction completed. Thank you!");
+        System.out.println("Withdrawal completed. Thank you!");
+
+        //If customerID does not exist
+        return rowsUpdated;
+    }
+
+    private static int accountDeposit(int customerID, Connection conn) {
+        int rowsUpdated = 0;
+
+        //Request for what kind of account they would like to deposit to
+        System.out.println("Would you like to deposit to savings or checking account? Please type \"savings\" or \"checking\"");
+        String savingsOrChecking = null;
+
+        //Checking for correct input
+        while(true) {
+            savingsOrChecking = Input.getString();
+
+            if (savingsOrChecking.equals("savings") || savingsOrChecking.equals("checking")) break;
+            System.out.println("Invalid option: Please try again");
+        }
+
+
+        System.out.println("Here are your available accounts");
+        List<Integer> accountIDs = printAccounts(customerID, savingsOrChecking, conn);
+
+        if (accountIDs.isEmpty()) return 0;
+
+        //Requesting which account they would like to deposit to
+        System.out.println("Please type in the ID of the account you would like to deposit to");
+        int accountID;
+
+        //Checking for correct accountID
+        while(true) {
+            accountID = Input.getInt();
+
+            if(accountIDs.contains(accountID)) break;
+            System.out.println("Invalid option: Please try again");
+        }
+
+        //Request how much they would like to deposit from account
+        System.out.println("Please enter much would you like to deposit");
+        Double withdrawalAmount = Input.getDouble();
+
+//        //If there are sufficient funds then continue on with deposit
+//        if(!validateWithdrawal(withdrawalAmount, accountID, conn)) {
+//            System.out.println("Insufficient Funds!");
+//            return 0;
+//        }
+
+        System.out.println("Here are the branches you can deposit to");
+        List<Integer> branchIDs = printAvailableBranches("teller", conn);
+
+        //Requesting which branch they would like to withdraw
+        System.out.println("Please type in the ID of the branch you would like to deposit to");
+        int branchID;
+
+        while(true) {
+            branchID = Input.getInt();
+
+            if(branchIDs.contains(branchID)) break;
+            System.out.println("Invalid option: Please try again");
+        }
+
+//        System.out.println("Would you like to deposit to an ATM or a teller? Please type \"atm\" or \"teller\"");
+//        String atmOrTeller = null;
+//
+//        while(true) {
+//            atmOrTeller = Input.getString();
+//
+//            if(atmOrTeller.equals("atm") || atmOrTeller.equals("teller")) break;
+//            System.out.println("Invalid option: Please try again");
+//        }
+
+//        //If user chooses checking account and atm, then check if the checking account has a debit card
+//        if(atmOrTeller.equals("atm") && savingsOrChecking.equals("checking")) {
+//            if(!checkDebitCard(accountID, conn)) {
+//                System.out.println("This account is not associated with a checking account");
+//                return 0;
+//            }
+//        }
+
+        List<Integer> methodIDs = null;
+        methodIDs = printTellers(branchID, conn);
+
+        System.out.println("Please type in the ID of the payment method you would like to withdraw with");
+        int methodID;
+
+        while(true) {
+            methodID = Input.getInt();
+
+            if(methodIDs.contains(methodID)) break;
+            System.out.println("Invalid option: Please try again");
+        }
+
+        //Make deposit
+        rowsUpdated += depositTransaction(accountID, withdrawalAmount, methodID, conn);
+
+//        //If withdrawal from savings account, then we need to check whether balance < min_balance and delete account
+//        if (savingsOrChecking.equals("savings")) {
+//            if(checkSavingsMinBalanceConstraint(accountID, conn)) {
+//                System.out.println("Due to your savings account being below the minimum balance, it has been closed");
+//            }
+//        }
+
+        System.out.println("Deposit completed. Thank you!");
 
         //If customerID does not exist
         return rowsUpdated;
@@ -245,6 +349,82 @@ public class AccountInterface {
         return rowsUpdated;
     }
 
+    private static int depositTransaction(int accountID, double amount, int methodID, Connection conn) {
+        int rowsUpdated = 0;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE account SET balance = balance + ? WHERE account_id = ?");
+
+            stmt.setDouble(1, amount);
+            stmt.setInt(2, accountID);
+
+            rowsUpdated += stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error making deposit to account");
+        }
+
+        int transID = 0;
+        try {
+            String[] returnId = { "trans_id" };
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO transactions (amount, month, day, year) VALUES (?, ?, ?, ?)", returnId);
+
+            Calendar calendar = Calendar.getInstance();
+            int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+            int currentMonth = calendar.get(Calendar.MONTH) + 1;
+            int currentYear = calendar.get(Calendar.YEAR);
+
+            stmt.setDouble(1, amount);
+            stmt.setInt(2, currentMonth);
+            stmt.setInt(3, currentDay);
+            stmt.setInt(4, currentYear);
+
+            rowsUpdated += stmt.executeUpdate();
+
+            ResultSet res = stmt.getGeneratedKeys();
+
+            if(res.next()) {
+                transID = res.getInt(1);
+            }
+
+            stmt.close();
+            res.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error inserting deposit transaction");
+        }
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO deposit (trans_id, method_id, account_id) VALUES (?, ?, ?)");
+
+            stmt.setInt(1, transID);
+            stmt.setInt(2, methodID);
+            stmt.setInt(3, accountID);
+
+            rowsUpdated += stmt.executeUpdate();
+
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error inserting withdrawal transaction");
+        }
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO account_trans (trans_id) VALUES (?)");
+
+            stmt.setInt(1, transID);
+
+            rowsUpdated += stmt.executeUpdate();
+
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error inserting into account_trans");
+        }
+
+        return rowsUpdated;
+    }
+
     private static boolean checkSavingsMinBalanceConstraint(int accountID, Connection conn) {
         //Check if balance is below min balance for savings account
         //If it is then delete the account and return true
@@ -277,13 +457,6 @@ public class AccountInterface {
 
         return false;
     }
-
-    private static void accountDeposit(int customerID, Connection conn) {
-        System.out.println("Please ");
-
-        return;
-    }
-
 
     //List valid branches available depending on if customer deposits or withdraws or pays loan
     //tranMethod options: "atm", "teller", "both'
