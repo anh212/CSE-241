@@ -60,12 +60,11 @@ public class AccountInterface {
         List<Integer> cardIDs = null;
         if (debitOrCredit.equals("debit")) {
             cardIDs = printCards(customerID, "debit", conn);
+            if (cardIDs.isEmpty()) return 0;
 
             //Ask to choose which card they would like to use
             System.out.println("Please choose the card you would like to make a purchase with");
             int cardID;
-
-            if (cardIDs.isEmpty()) return 0;
 
             while(true) {
                 cardID = Input.getInt();
@@ -92,12 +91,11 @@ public class AccountInterface {
             rowsUpdated += debitPurchase(accountID, cardID, vendorName, purchaseAmount, conn);
         } else if (debitOrCredit.equals("credit")) {
             cardIDs = printCards(customerID, "credit", conn);
+            if (cardIDs.isEmpty()) return 0;
 
             //Ask to choose which card they would like to use
             System.out.println("Please choose the card you would like to make a purchase with");
             int cardID;
-
-            if (cardIDs.isEmpty()) return 0;
 
             while(true) {
                 cardID = Input.getInt();
@@ -359,11 +357,11 @@ public class AccountInterface {
     private static List<Integer> printDebitCards(int customerID, Connection conn) {
         List<Integer> debitIDs = new ArrayList<>();
         try {
-            PreparedStatement debit = conn.prepareStatement("select * from account " +
-                    "join owns_account on account.account_id = owns_account.account_id " +
-                    "join customer on customer.customer_id = owns_account.customer_id " +
-                    "join debit_card on debit_card.account_id = account.account_id " +
-                    "where customer.customer_id = ?");
+            PreparedStatement debit = conn.prepareStatement("SELECT * FROM account " +
+                    "JOIN owns_account ON account.account_id = owns_account.account_id " +
+                    "JOIN customer ON customer.customer_id = owns_account.customer_id " +
+                    "JOIN debit_card ON debit_card.account_id = account.account_id " +
+                    "WHERE customer.customer_id = ?");
 
             debit.setInt(1, customerID);
 
