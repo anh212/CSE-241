@@ -28,7 +28,7 @@ public class CustomerInterface {
                         Login(conn);
                         AccountInterface.Interface(currentCustomer, conn);
                     }
-                    Input.clearConsole();
+                    currentCustomer = null;
                     break;
                 case "3":
                     //remove information about customer after they log out
