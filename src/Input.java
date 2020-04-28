@@ -58,6 +58,7 @@ public class Input {
             String phoneNum = readInput();
 
             //Matching XXX-XXX-XXXX Format through regex expression
+            //Received from: https://stackoverflow.com/questions/42104546/java-regular-expressions-to-validate-phone-numbers
             if (phoneNum.matches("(?:\\d{3}-){2}\\d{4}")) {
                 return phoneNum.trim();
             }
@@ -74,6 +75,7 @@ public class Input {
             String date = readInput();
 
             //Matching mm/dd/yyyy date format using regex expression
+            //Received from: https://howtodoinjava.com/regex/java-regex-date-format-validation/
             if (date.matches("^(1[0-2]|0[1-9])/(3[01]|[12][0-9]|0[1-9])/[0-9]{4}$")) {
                 return date.trim();
             }
@@ -82,6 +84,7 @@ public class Input {
         }
     }
 
+    //Received from: https://stackoverflow.com/questions/2979383/java-clear-the-console
     public static void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
