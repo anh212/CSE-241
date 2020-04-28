@@ -1,4 +1,7 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class CustomerInterface {
     private static Customer currentCustomer;
@@ -142,9 +145,8 @@ public class CustomerInterface {
 
             rowsUpdated += stmt.executeUpdate();
 
-            conn.commit();
             stmt.close();
-
+            conn.commit();
         } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println("Error inserting new customer");

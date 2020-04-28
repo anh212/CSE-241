@@ -55,6 +55,7 @@ public class NewBankAccountInterface {
         }
 
         rowsUpdated += createNewSavings(customerID, interestRate, newBalance, conn);
+        System.out.println("Thanks for making a new savings account");
 
         return rowsUpdated;
     }
@@ -79,6 +80,7 @@ public class NewBankAccountInterface {
         }
 
         rowsUpdated += createNewChecking(customerID, interestRate, newBalance, conn);
+        System.out.println("Thanks for making a new checking account");
 
         return rowsUpdated;
     }
@@ -89,55 +91,44 @@ public class NewBankAccountInterface {
         int newAccountID = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO account (interest_rate, balance) VALUES (?, ?)", returnID);
-
-            stmt.setDouble(1, interestRate);
-            stmt.setDouble(2, balance);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            ResultSet res = stmt.getGeneratedKeys();
+            //Inserting into account table
+            PreparedStatement account = conn.prepareStatement("INSERT INTO account (interest_rate, balance) VALUES (?, ?)", returnID);
+            account.setDouble(1, interestRate);
+            account.setDouble(2, balance);
+            rowsUpdated += account.executeUpdate();
+            ResultSet res = account.getGeneratedKeys();
 
             if (res.next()) {
                 newAccountID = res.getInt(1);
             }
 
-            stmt.close();
+            account.close();
             res.close();
+
+            //Inserting into own_account table
+            PreparedStatement own_account = conn.prepareStatement("INSERT INTO owns_account (customer_id, account_id) VALUES (?, ?)");
+            own_account.setInt(1, customerID);
+            own_account.setInt(2, newAccountID);
+            rowsUpdated += own_account.executeUpdate();
+            own_account.close();
+
+            //Inserting into savings table
+            PreparedStatement savings = conn.prepareStatement("INSERT INTO savings (account_id, min_balance) VALUES (?, 100)");
+            savings.setInt(1, newAccountID);
+            rowsUpdated += savings.executeUpdate();
+            savings.close();
+
+            conn.commit();
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+                System.out.println("Error rolling back while inserting new savings account");
+            }
             ex.printStackTrace();
             System.out.println("Error inserting into accounts");
         }
-
-        //Add into owns_account table
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO owns_account (customer_id, account_id) VALUES (?, ?)");
-
-            stmt.setInt(1, customerID);
-            stmt.setInt(2, newAccountID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting into owns_account");
-        }
-
-        //Inserting into savings
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO savings (account_id, min_balance) VALUES (?, 100)");
-
-            stmt.setInt(1, newAccountID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting into savings");
-        }
-
         return rowsUpdated;
     }
 
@@ -147,53 +138,43 @@ public class NewBankAccountInterface {
         int newAccountID = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO account (interest_rate, balance) VALUES (?, ?)", returnID);
-
-            stmt.setDouble(1, interestRate);
-            stmt.setDouble(2, balance);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            ResultSet res = stmt.getGeneratedKeys();
+            //Inserting into account table
+            PreparedStatement account = conn.prepareStatement("INSERT INTO account (interest_rate, balance) VALUES (?, ?)", returnID);
+            account.setDouble(1, interestRate);
+            account.setDouble(2, balance);
+            rowsUpdated += account.executeUpdate();
+            ResultSet res = account.getGeneratedKeys();
 
             if (res.next()) {
                 newAccountID = res.getInt(1);
             }
 
-            stmt.close();
+            account.close();
             res.close();
+
+            //Inserting into owns_account table
+            PreparedStatement owns_account = conn.prepareStatement("INSERT INTO owns_account (customer_id, account_id) VALUES (?, ?)");
+            owns_account.setInt(1, customerID);
+            owns_account.setInt(2, newAccountID);
+            rowsUpdated += owns_account.executeUpdate();
+            owns_account.close();
+
+            //Inserting into checking table
+            PreparedStatement checking = conn.prepareStatement("INSERT INTO checking (account_id) VALUES (?)");
+            checking.setInt(1, newAccountID);
+            rowsUpdated += checking.executeUpdate();
+            checking.close();
+
+            conn.commit();
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+                System.out.println("Error rolling back while inserting new checking account");
+            }
             ex.printStackTrace();
-            System.out.println("Error inserting into accounts");
-        }
-
-        //Add into owns_account table
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO owns_account (customer_id, account_id) VALUES (?, ?)");
-
-            stmt.setInt(1, customerID);
-            stmt.setInt(2, newAccountID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting into owns_account");
-        }
-
-        //Inserting into savings
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO checking (account_id) VALUES (?)");
-
-            stmt.setInt(1, newAccountID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting into checking");
+            System.out.println("Error inserting new checking account");
         }
 
         return rowsUpdated;

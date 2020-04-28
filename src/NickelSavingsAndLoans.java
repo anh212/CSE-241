@@ -20,18 +20,19 @@ public class NickelSavingsAndLoans {
 
         //Asking for database credentials for authentication
         while(true) {
+            String user = "";
+            String password = "";
+
+            System.out.println("Please enter username:");
+            user = Input.getString();
+
+            System.out.println("Please enter password for " + user + ":");
+            password = String.valueOf(console.readPassword());
+
             try {
-                String user = "";
-                String password = "";
-
-                System.out.println("Please enter username:");
-                user = Input.getString();
-
-                System.out.println("Please enter password for " + user + ":");
-                password = String.valueOf(console.readPassword());
                 conn = DriverManager.getConnection(
                         "jdbc:oracle:thin:@edgar1.cse.lehigh.edu:1521:cse241", user, password);
-
+                conn.setAutoCommit(false);
                 break;
             } catch (SQLException e) {
                 System.out.println("Authentication failed, please try again");

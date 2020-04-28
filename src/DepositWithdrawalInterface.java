@@ -132,60 +132,61 @@ public class DepositWithdrawalInterface {
 
         int transID = 0;
         try {
+            //Inserting into transactions table
             String[] returnId = { "trans_id" };
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO transactions (amount, month, day, year) VALUES (?, ?, ?, ?)", returnId);
+            PreparedStatement trans = conn.prepareStatement("INSERT INTO transactions (amount, month, day, year) VALUES (?, ?, ?, ?)", returnId);
 
             Calendar calendar = Calendar.getInstance();
             int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
             int currentMonth = calendar.get(Calendar.MONTH) + 1;
             int currentYear = calendar.get(Calendar.YEAR);
 
-            stmt.setDouble(1, amount);
-            stmt.setInt(2, currentMonth);
-            stmt.setInt(3, currentDay);
-            stmt.setInt(4, currentYear);
+            trans.setDouble(1, amount);
+            trans.setInt(2, currentMonth);
+            trans.setInt(3, currentDay);
+            trans.setInt(4, currentYear);
 
-            rowsUpdated += stmt.executeUpdate();
+            rowsUpdated += trans.executeUpdate();
 
-            ResultSet res = stmt.getGeneratedKeys();
+            ResultSet res = trans.getGeneratedKeys();
 
             if(res.next()) {
                 transID = res.getInt(1);
             }
 
-            stmt.close();
+            trans.close();
             res.close();
+
+            //Inserting into deposit table
+            PreparedStatement deposit = conn.prepareStatement("INSERT INTO deposit (trans_id, method_id, account_id) VALUES (?, ?, ?)");
+
+            deposit.setInt(1, transID);
+            deposit.setInt(2, methodID);
+            deposit.setInt(3, accountID);
+
+            rowsUpdated += deposit.executeUpdate();
+
+            deposit.close();
+
+            //Inserting into account_trans table
+            PreparedStatement account_trans = conn.prepareStatement("INSERT INTO account_trans (trans_id) VALUES (?)");
+
+            account_trans.setInt(1, transID);
+
+            rowsUpdated += account_trans.executeUpdate();
+
+            account_trans.close();
+
+            conn.commit();
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+                System.out.println("Error trying rollback when inserting deposit transaction");
+            }
             ex.printStackTrace();
             System.out.println("Error inserting deposit transaction");
-        }
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO deposit (trans_id, method_id, account_id) VALUES (?, ?, ?)");
-
-            stmt.setInt(1, transID);
-            stmt.setInt(2, methodID);
-            stmt.setInt(3, accountID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting withdrawal transaction");
-        }
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO account_trans (trans_id) VALUES (?)");
-
-            stmt.setInt(1, transID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting into account_trans");
         }
 
         return rowsUpdated;
@@ -306,74 +307,65 @@ public class DepositWithdrawalInterface {
     private static int withdrawalTransaction(int accountID, double amount, int methodID, Connection conn) {
         int rowsUpdated = 0;
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE account SET balance = balance - ? WHERE account_id = ?");
+            //Updating balance
+            PreparedStatement account = conn.prepareStatement("UPDATE account SET balance = balance - ? WHERE account_id = ?");
 
-            stmt.setDouble(1, amount);
-            stmt.setInt(2, accountID);
+            account.setDouble(1, amount);
+            account.setInt(2, accountID);
 
-            rowsUpdated += stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error making withdrawal from account");
-        }
+            rowsUpdated += account.executeUpdate();
+            account.close();
 
-        int transID = 0;
-        try {
+            //Inserting into transactions table
+            int transID = 0;
             String[] returnId = { "trans_id" };
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO transactions (amount, month, day, year) VALUES (?, ?, ?, ?)", returnId);
+            PreparedStatement trans = conn.prepareStatement("INSERT INTO transactions (amount, month, day, year) VALUES (?, ?, ?, ?)", returnId);
 
             Calendar calendar = Calendar.getInstance();
             int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
             int currentMonth = calendar.get(Calendar.MONTH) + 1;
             int currentYear = calendar.get(Calendar.YEAR);
 
-            stmt.setDouble(1, amount);
-            stmt.setInt(2, currentMonth);
-            stmt.setInt(3, currentDay);
-            stmt.setInt(4, currentYear);
+            trans.setDouble(1, amount);
+            trans.setInt(2, currentMonth);
+            trans.setInt(3, currentDay);
+            trans.setInt(4, currentYear);
 
-            rowsUpdated += stmt.executeUpdate();
+            rowsUpdated += trans.executeUpdate();
 
-            ResultSet res = stmt.getGeneratedKeys();
+            ResultSet res = trans.getGeneratedKeys();
 
             if(res.next()) {
                 transID = res.getInt(1);
             }
 
-            stmt.close();
+            trans.close();
             res.close();
+
+            //Inserting into withdrawal table
+            PreparedStatement withdrawal = conn.prepareStatement("INSERT INTO withdrawal (trans_id, method_id, account_id) VALUES (?, ?, ?)");
+            withdrawal.setInt(1, transID);
+            withdrawal.setInt(2, methodID);
+            withdrawal.setInt(3, accountID);
+            rowsUpdated += withdrawal.executeUpdate();
+            withdrawal.close();
+
+            //Inserting into account_trans table
+            PreparedStatement account_trans = conn.prepareStatement("INSERT INTO account_trans (trans_id) VALUES (?)");
+            account_trans.setInt(1, transID);
+            rowsUpdated += account_trans.executeUpdate();
+            account_trans.close();
+
+            conn.commit();
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+                System.out.println("Error while rolling back withdrawal transaction");
+            }
             ex.printStackTrace();
-            System.out.println("Error inserting withdrawal transaction");
-        }
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO withdrawal (trans_id, method_id, account_id) VALUES (?, ?, ?)");
-
-            stmt.setInt(1, transID);
-            stmt.setInt(2, methodID);
-            stmt.setInt(3, accountID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting withdrawal transaction");
-        }
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO account_trans (trans_id) VALUES (?)");
-
-            stmt.setInt(1, transID);
-
-            rowsUpdated += stmt.executeUpdate();
-
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting into account_trans");
+            System.out.println("Error making withdrawal from account");
         }
 
         return rowsUpdated;
@@ -460,7 +452,7 @@ public class DepositWithdrawalInterface {
 
             ResultSet res = stmt.executeQuery();
 
-            System.out.printf("%-19s%-19s%-19s%-19s%-19s%-19s\n", "branch ID", "Street Number", "Street Name", "City", "State", "ZIP");
+            System.out.printf("%-21s%-21s%-21s%-21s%-21s%-21s\n", "branch ID", "Street Number", "Street Name", "City", "State", "ZIP");
 
             while(res.next()) {
                 int branchID = res.getInt("branch_id");
@@ -470,7 +462,7 @@ public class DepositWithdrawalInterface {
                 String state = res.getString("state");
                 String zip = res.getString("zip");
 
-                System.out.printf("%-19s%-19s%-19s%-19s%-19s%-19s\n", branchID, streetNum, streetName, city, state, zip);
+                System.out.printf("%-21s%-21s%-21s%-21s%-21s%-21s\n", branchID, streetNum, streetName, city, state, zip);
 
                 //Cache branchIDs so we can check if user input is in this set
                 branchIDs.add(branchID);
@@ -591,13 +583,22 @@ public class DepositWithdrawalInterface {
 
             rowsUpdated = stmt.executeUpdate();
             stmt.close();
+
+            conn.commit();
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+                System.out.println("Error rolling back account deletion");
+            }
             ex.printStackTrace();
             System.out.println("Error deleting account");
         }
         return rowsUpdated;
     }
 
+    //Print tellers at a branch
     private static List<Integer> printTellers(int branchID, Connection conn) {
         List<Integer> tellerIDs = new ArrayList<>();
 
@@ -634,6 +635,7 @@ public class DepositWithdrawalInterface {
         return tellerIDs;
     }
 
+    //Print ATMs at a branch
     private static List<Integer> printATMs(int branchID, Connection conn) {
         List<Integer> atmIDs = new ArrayList<>();
 
@@ -669,6 +671,7 @@ public class DepositWithdrawalInterface {
         return atmIDs;
     }
 
+    //Check if any debit cards exits for an checking account
     private static boolean checkDebitCard(int accountID, Connection conn) {
         System.out.println(accountID);
         try {
@@ -679,7 +682,6 @@ public class DepositWithdrawalInterface {
             ResultSet res = stmt.executeQuery();
 
             if(res.isBeforeFirst()) {
-                System.out.println("Get true");
                 return true;
             }
 
