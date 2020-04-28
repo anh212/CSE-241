@@ -38,25 +38,18 @@ public class NickelSavingsAndLoans {
             }
         }
 
-        //If user causes SIGTERM to be triggered (Ex. pressing Ctrl-C to end program)
-        //database will get disconnected
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//            @Override
-//            public void run() {
-//                try {
-//                    conn.close();
-//                    System.out.println("Database disconnected");
-//                } catch (SQLException ex) {
-//                    System.out.println("problem disconnecting");
-//                }
-//            }
-//        });
-
-
-
         while(true) {
             //Prompt user to Main Menu
-            System.out.println("Main Menu");
+            Input.clearConsole();
+
+            System.out.println("Welcome to Nickel Savings and Loans");
+
+            System.out.println();
+            System.out.println("-------------");
+            System.out.println("| Main Menu |");
+            System.out.println("-------------");
+            System.out.println();
+
             System.out.println("Please enter the number corresponding to your role");
             System.out.println("[1] Bank Management");
             System.out.println("[2] Customer");
@@ -73,6 +66,7 @@ public class NickelSavingsAndLoans {
                     CustomerInterface.Interface(conn);
                     break;
                 case "3":
+                    disconnect(conn);
                     return;
                 default:
                     System.out.println("Invalid command");
@@ -80,7 +74,7 @@ public class NickelSavingsAndLoans {
         }
     }
 
-    public void disconnect(Connection conn) {
+    public static void disconnect(Connection conn) {
         try {
             conn.close();
         } catch (SQLException ex) {
