@@ -51,21 +51,17 @@ public class NickelSavingsAndLoans {
             System.out.println();
 
             System.out.println("Please enter the number corresponding to your role");
-            System.out.println("[1] Bank Management");
-            System.out.println("[2] Customer");
-            System.out.println("[3] Exit Interface");
+            System.out.println("[1] Customer");
+            System.out.println("[2] Exit Interface");
 
             String input = Input.getString();
 
             //Go to interface that user selects
             switch(input) {
                 case "1":
-                    BankManagementInterface.Interface(conn);
-                    break;
-                case "2":
                     CustomerInterface.Interface(conn);
                     break;
-                case "3":
+                case "2":
                     disconnect(conn);
                     return;
                 default:
