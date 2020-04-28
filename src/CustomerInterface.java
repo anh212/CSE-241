@@ -10,7 +10,7 @@ public class CustomerInterface {
             //Prompt user to Main Menu
             System.out.println("Customer Interface");
             System.out.println("Please enter the number corresponding to your action");
-            System.out.println("[1] Create new account");
+            System.out.println("[1] Create new customer account");
             System.out.println("[2] Login to account");
             System.out.println("[3] Exit Interface");
 
@@ -19,7 +19,7 @@ public class CustomerInterface {
             //Go to interface that user selects
             switch(input) {
                 case "1":
-                    BankManagementInterface.Interface(conn);
+                    NewCustomerAccount(conn);
                     break;
                 case "2":
                     if (currentCustomer != null) {
@@ -102,12 +102,80 @@ public class CustomerInterface {
         return false;
     }
 
-    private static void NewAccount(Connection conn) {
+    private static int NewCustomerAccount(Connection conn) {
+        int rowsUpdated = 0;
 
+        System.out.println("Please enter you first name");
+        String firstName = Input.getString();
+
+        System.out.println("Please enter your last name");
+        String lastName = Input.getString();
+
+        System.out.println("Please enter your phone number");
+        String phoneNum = Input.getPhoneNumber();
+
+        //check for duplicate phone_number
+        if(validatePhoneNumber(phoneNum, conn)) {
+            System.out.println("This phone number already exists");
+            return 0;
+        }
+
+        System.out.println("Please enter you birth date");
+        String dob = Input.getDate();
+
+        //Insert into customer table
+        rowsUpdated += makeNewCustomerAccount(firstName, lastName, phoneNum, dob, conn);
+        System.out.println("Welcome new customer!");
+
+        return rowsUpdated;
     }
 
-    private static void makeNewAccount(String firstName, String lastName, String phoneNumber, String dateOfBirth, Connection conn ) {
+    private static int makeNewCustomerAccount(String firstName, String lastName, String phoneNumber, String dateOfBirth, Connection conn ) {
+        int rowsUpdated = 0;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO customer (first_name, last_name, phone_number, date_of_birth) VALUES (?, ?, ?, ?)");
 
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setString(3, phoneNumber);
+            stmt.setString(4, dateOfBirth);
+
+            rowsUpdated += stmt.executeUpdate();
+
+            conn.commit();
+            stmt.close();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error inserting new customer");
+
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+                System.out.println("Error rolling back database after trying to insert customer");
+            }
+        }
+
+        return rowsUpdated;
+    }
+
+    private static boolean validatePhoneNumber(String phoneNumber, Connection conn) {
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT phone_number FROM customer WHERE phone_number = ?");
+
+            stmt.setString(1, phoneNumber);
+
+            ResultSet res = stmt.executeQuery();
+
+            if (res.next()) return true;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error getting phone numbers");
+        }
+
+        return false;
     }
 
     private static int getCustomerID(String firstName, String lastName, String phoneNumber, String dateOfBirth, Connection conn) {
