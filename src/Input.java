@@ -23,6 +23,8 @@ public class Input {
                 String input = readInput();
                 int number = Integer.parseInt(input);
 
+                if (number < 0) continue;
+
                 return number;
             } catch (NumberFormatException ex) {
                 System.out.println("Please enter a valid integer");
@@ -35,6 +37,8 @@ public class Input {
             try {
                 String input = readInput();
                 double number = Double.parseDouble(input);
+
+                if (number < 0) continue;
 
                 return number;
             } catch (NumberFormatException ex) {
