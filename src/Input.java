@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 
 public class Input {
 
     private static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    public static DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
     private static String readInput() {
         while (true) {
@@ -59,7 +61,7 @@ public class Input {
                 double number = Double.parseDouble(input);
 
                 if (number <= 0 || number >= max) {
-                    System.out.println("Your number is out of range: Needs to be less than " + max);
+                    System.out.println("Your number is out of range: [0," + Input.decimalFormat.format(max) + "]");
                     continue;
                 }
 
@@ -80,7 +82,7 @@ public class Input {
         while (true) {
             input = getString();
             if (input.length() <= maxLength) return input;
-            System.out.println("Input length needs to be less than or equal to " + maxLength);
+            System.out.println("Input length needs to be less than or equal to " + Input.decimalFormat.format(maxLength));
         }
     }
 
