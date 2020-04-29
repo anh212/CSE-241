@@ -48,12 +48,6 @@ public class DepositWithdrawalInterface {
         System.out.println("Please enter much would you like to deposit");
         Double withdrawalAmount = Input.getDouble();
 
-//        //If there are sufficient funds then continue on with deposit
-//        if(!validateWithdrawal(withdrawalAmount, accountID, conn)) {
-//            System.out.println("Insufficient Funds!");
-//            return 0;
-//        }
-
         System.out.println("Here are the branches you can deposit to");
         List<Integer> branchIDs = printAvailableBranches("teller", conn);
 
@@ -67,24 +61,6 @@ public class DepositWithdrawalInterface {
             if(branchIDs.contains(branchID)) break;
             System.out.println("Invalid option: Please try again");
         }
-
-//        System.out.println("Would you like to deposit to an ATM or a teller? Please type \"atm\" or \"teller\"");
-//        String atmOrTeller = null;
-//
-//        while(true) {
-//            atmOrTeller = Input.getString();
-//
-//            if(atmOrTeller.equals("atm") || atmOrTeller.equals("teller")) break;
-//            System.out.println("Invalid option: Please try again");
-//        }
-
-//        //If user chooses checking account and atm, then check if the checking account has a debit card
-//        if(atmOrTeller.equals("atm") && savingsOrChecking.equals("checking")) {
-//            if(!checkDebitCard(accountID, conn)) {
-//                System.out.println("This account is not associated with a checking account");
-//                return 0;
-//            }
-//        }
 
         List<Integer> methodIDs = null;
         methodIDs = printTellers(branchID, conn);
@@ -102,13 +78,6 @@ public class DepositWithdrawalInterface {
         //Make deposit
         rowsUpdated += depositTransaction(accountID, withdrawalAmount, methodID, conn);
 
-//        //If withdrawal from savings account, then we need to check whether balance < min_balance and delete account
-//        if (savingsOrChecking.equals("savings")) {
-//            if(checkSavingsMinBalanceConstraint(accountID, conn)) {
-//                System.out.println("Due to your savings account being below the minimum balance, it has been closed");
-//            }
-//        }
-
         System.out.println("Deposit completed. Thank you!");
 
         //If customerID does not exist
@@ -117,21 +86,18 @@ public class DepositWithdrawalInterface {
 
     private static int depositTransaction(int accountID, double amount, int methodID, Connection conn) {
         int rowsUpdated = 0;
-        try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE account SET balance = balance + ? WHERE account_id = ?");
-
-            stmt.setDouble(1, amount);
-            stmt.setInt(2, accountID);
-
-            rowsUpdated += stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error making deposit to account");
-        }
-
         int transID = 0;
+
         try {
+            //Update balance
+            PreparedStatement account = conn.prepareStatement("UPDATE account SET balance = balance + ? WHERE account_id = ?");
+
+            account.setDouble(1, amount);
+            account.setInt(2, accountID);
+
+            rowsUpdated += account.executeUpdate();
+            account.close();
+
             //Inserting into transactions table
             String[] returnId = { "trans_id" };
             PreparedStatement trans = conn.prepareStatement("INSERT INTO transactions (amount, month, day, year) VALUES (?, ?, ?, ?)", returnId);
@@ -507,6 +473,7 @@ public class DepositWithdrawalInterface {
 
             //Checking for empty set
             if(!res.isBeforeFirst()) {
+                Input.clearConsole();
                 System.out.println("No checking accounts available");
                 return accountIDs;
             }
@@ -524,8 +491,6 @@ public class DepositWithdrawalInterface {
             checking.close();
             res.close();
             System.out.println();
-
-
         } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println("Error printing checking accounts");
@@ -550,6 +515,7 @@ public class DepositWithdrawalInterface {
             ResultSet res = savings.executeQuery();
 
             if(!res.isBeforeFirst()) {
+                Input.clearConsole();
                 System.out.println("No savings accounts available");
                 return accountIDs;
             }
