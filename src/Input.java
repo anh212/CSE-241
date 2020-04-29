@@ -10,6 +10,10 @@ public class Input {
         while (true) {
             try {
                 String line = in.readLine();
+                if (line.length() == 0) {
+                    System.out.println("Input can't be empty");
+                    continue;
+                }
                 return line.trim();
             } catch (IOException e) {
                 System.out.println("There was an error reading your input");
@@ -21,6 +25,7 @@ public class Input {
         while(true) {
             try {
                 String input = readInput();
+
                 int number = Integer.parseInt(input);
 
                 if (number < 0) continue;
@@ -47,8 +52,36 @@ public class Input {
         }
     }
 
+    public static double getDouble(double max) {
+        while(true) {
+            try {
+                String input = readInput();
+                double number = Double.parseDouble(input);
+
+                if (number <= 0 || number >= max) {
+                    System.out.println("Your number is out of range: Needs to be less than " + max);
+                    continue;
+                }
+
+                return number;
+            } catch (NumberFormatException ex) {
+                System.out.println("Please enter a valid double");
+            }
+        }
+    }
+
     public static String getString() {
         return readInput();
+    }
+
+    public static String getString(int maxLength) {
+        String input;
+
+        while (true) {
+            input = getString();
+            if (input.length() <= maxLength) return input;
+            System.out.println("Input length needs to be less than or equal to " + maxLength);
+        }
     }
 
     public static String getPhoneNumber() {
@@ -81,6 +114,32 @@ public class Input {
             }
 
             System.out.println("The date is in the wrong format: Please try again");
+        }
+    }
+
+    public static String getStreetNum() {
+        System.out.println("Please enter a maximum of 5 digits");
+
+        while (true) {
+            int streetNum = getInt();
+            String streetNumString = String.valueOf(streetNum);
+
+            if (streetNumString.length() <= 5) return streetNumString;
+
+            System.out.println("Please input a street number that has a maximum of 5 digits");
+        }
+    }
+
+    public static String getZipcode() {
+        System.out.println("Please enter a 5 digit zipcode");
+
+        while (true) {
+            int zipcode = getInt();
+            String zipString = String.valueOf(zipcode);
+
+            if (zipString.length() == 5) return zipString;
+
+            System.out.println("Please enter a zip code that is 5 digits");
         }
     }
 
