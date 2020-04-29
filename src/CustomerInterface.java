@@ -43,22 +43,13 @@ public class CustomerInterface {
         }
     }
 
-
-//
-//    //Login for customer
-//    public static void CustomerLogin(Connection conn) {
-//        while(true) {
-//
-//        }
-//    }
-
     private static void Login(Connection conn) {
         while(true) {
             System.out.println("Please enter you first name");
-            String firstName = Input.getString();
+            String firstName = Input.getString(20);
 
             System.out.println("Please enter your last name");
-            String lastName = Input.getString();
+            String lastName = Input.getString(20);
 
             System.out.println("Please enter you phone number");
             String phoneNumber = Input.getPhoneNumber();
@@ -98,7 +89,6 @@ public class CustomerInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error preparedStatement for Customer.verifyLogin");
         }
 
@@ -109,10 +99,10 @@ public class CustomerInterface {
         int rowsUpdated = 0;
 
         System.out.println("Please enter you first name");
-        String firstName = Input.getString();
+        String firstName = Input.getString(20);
 
         System.out.println("Please enter your last name");
-        String lastName = Input.getString();
+        String lastName = Input.getString(20);
 
         System.out.println("Please enter your phone number");
         String phoneNum = Input.getPhoneNumber();
@@ -148,15 +138,13 @@ public class CustomerInterface {
             stmt.close();
             conn.commit();
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Error inserting new customer");
-
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back database after trying to insert customer");
             }
+
+            System.out.println("Error inserting new customer");
         }
 
         return rowsUpdated;
@@ -173,7 +161,6 @@ public class CustomerInterface {
             if (res.next()) return true;
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error getting phone numbers");
         }
 
@@ -201,7 +188,6 @@ public class CustomerInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error getting customer ID");
         }
 
@@ -225,7 +211,6 @@ public class CustomerInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error getting branch ID");
         }
         return branchID;
