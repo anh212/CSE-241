@@ -18,7 +18,8 @@ public class AccountInterface {
             System.out.println("[2] Make a withdrawal");
             System.out.println("[3] Make a purchase");
             System.out.println("[4] Open a new bank account");
-            System.out.println("[5] Exit");
+            System.out.println("[5] Take out a new loan");
+            System.out.println("[6] Exit");
 
             String input = Input.getString();
 
@@ -37,6 +38,9 @@ public class AccountInterface {
                     NewBankAccountInterface.Interface(customer, conn);
                     break;
                 case "5":
+                    NewLoanInterface.Interface(customer, conn);
+                    break;
+                case "6":
                     return;
                 default:
                     System.out.println("Invalid command");
@@ -112,7 +116,7 @@ public class AccountInterface {
 
             //Validate credit purchase to make sure it is not above credit_limit
             if(!validateCreditPurchase(purchaseAmount, cardID, conn)) {
-                System.out.println("Amount exceeds remaining credit_limit!");
+                System.out.println("Amount exceeds remaining credit limit!");
                 return 0;
             }
 
@@ -324,12 +328,13 @@ public class AccountInterface {
 
             ResultSet res = debit.executeQuery();
 
-            System.out.printf("%-19s%-19s%-19s\n", "Debit ID", "Balance", "Checking Account ID");
-
+            //Check if customer does not have any debit cards
             if (!res.isBeforeFirst()) {
                 System.out.println("No debit cards available");
                 return debitIDs;
             }
+
+            System.out.printf("%-19s%-19s%-19s\n", "Debit Card ID", "Balance", "Checking Account ID");
 
             while(res.next()) {
                 int debitID = res.getInt("debit_id");
@@ -361,12 +366,13 @@ public class AccountInterface {
 
             ResultSet res = credit.executeQuery();
 
-            System.out.printf("%-19s%-19s%-19s%-19s\n", "Credit ID", "Balance", "Credit Limit", "Balance Due");
-
+            //Check if customer does not have any credit cards
             if (!res.isBeforeFirst()) {
                 System.out.println("No credit cards available");
                 return creditIDs;
             }
+
+            System.out.printf("%-19s%-19s%-19s%-19s\n", "Credit ID", "Balance", "Credit Limit", "Balance Due");
 
             while(res.next()) {
                 int creditID = res.getInt("credit_id");
