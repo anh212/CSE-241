@@ -55,7 +55,7 @@ public class NewBankAccountInterface {
         }
 
         rowsUpdated += createNewSavings(customerID, interestRate, newBalance, conn);
-        System.out.println("Thanks for making a new savings account");
+        System.out.println("Thanks for making a new savings account!");
 
         return rowsUpdated;
     }
@@ -80,7 +80,7 @@ public class NewBankAccountInterface {
         }
 
         rowsUpdated += createNewChecking(customerID, interestRate, newBalance, conn);
-        System.out.println("Thanks for making a new checking account");
+        System.out.println("Thanks for making a new checking account!");
 
         return rowsUpdated;
     }
