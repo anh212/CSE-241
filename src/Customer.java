@@ -5,7 +5,7 @@ public class Customer {
     private String phoneNumber;
     private String dateOfBirth;
 
-    public Customer(int id, String firstName, String lastName, String phoneNumber, String dateOfBirth, int branch_id) {
+    public Customer(int id, String firstName, String lastName, String phoneNumber, String dateOfBirth) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
