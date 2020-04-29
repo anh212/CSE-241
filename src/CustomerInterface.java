@@ -71,8 +71,8 @@ public class CustomerInterface {
             } else {
                 //Figure out how to get customer_id when making new customer
                 int ID = getCustomerID(firstName, lastName, phoneNumber, dob, conn);
-                currentCustomer = new Customer(ID, firstName, lastName, phoneNumber, dob, getBranchID(ID, conn));
-                System.out.println("Welcome " + firstName + " " + lastName + "ID: " + currentCustomer.getId());
+                currentCustomer = new Customer(ID, firstName, lastName, phoneNumber, dob);
+                System.out.println("Welcome " + currentCustomer.getFirstName() + " " + currentCustomer.getLastName());
                 break;
             }
         }
@@ -221,6 +221,7 @@ public class CustomerInterface {
             if (res.next()) {
                 branchID = res.getInt("branch_id");
             }
+
             stmt.close();
             res.close();
         } catch (SQLException ex) {
