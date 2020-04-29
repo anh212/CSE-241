@@ -38,7 +38,7 @@ public class NewBankAccountInterface {
 
         //Check that newBalance > min_balance ($100)
         while(true) {
-            newBalance = Input.getDouble();
+            newBalance = Input.getDouble(100000);
 
             if (newBalance >= 100) break;
             System.out.println("Need minimum balance of $100!");
@@ -64,7 +64,7 @@ public class NewBankAccountInterface {
         int rowsUpdated = 0;
 
         System.out.println("Please enter your initial balance");
-        double newBalance = Input.getDouble();
+        double newBalance = Input.getDouble(100000);
 
         System.out.println("Please enter your interest rate (Less than 100%): Please enter a decimal value");
         double interestRate;
@@ -123,10 +123,8 @@ public class NewBankAccountInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back while inserting new savings account");
             }
-            ex.printStackTrace();
             System.out.println("Error inserting into accounts");
         }
         return rowsUpdated;
@@ -170,10 +168,8 @@ public class NewBankAccountInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back while inserting new checking account");
             }
-            ex.printStackTrace();
             System.out.println("Error inserting new checking account");
         }
 

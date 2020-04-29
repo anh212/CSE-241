@@ -113,7 +113,6 @@ public class PurchaseInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error validating debit purchase");
         }
 
@@ -141,7 +140,6 @@ public class PurchaseInterface {
             res.close();
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error validating credit purchase");
         }
 
@@ -198,11 +196,9 @@ public class PurchaseInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back while making debit purchase");
             }
 
-            ex.printStackTrace();
             System.out.println("Error inserting into purchases table");
         }
 
@@ -259,10 +255,8 @@ public class PurchaseInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error trying to roll back inserting new credit purchase");
             }
-            ex.printStackTrace();
             System.out.println("Error inserting credit purchase");
         }
 
@@ -292,6 +286,7 @@ public class PurchaseInterface {
 
             //Check if customer does not have any debit cards
             if (!res.isBeforeFirst()) {
+                Input.clearConsole();
                 System.out.println("No debit cards available");
                 return debitIDs;
             }
@@ -305,14 +300,13 @@ public class PurchaseInterface {
 
                 debitIDs.add(debitID);
 
-                System.out.printf("%-19s%-19s%-19s\n", debitID, balance, checkingAccountID);
+                System.out.printf("%-19s%-19s%-19s\n", debitID, "$" + Input.decimalFormat.format(balance), checkingAccountID);
             }
             debit.close();
             res.close();
             System.out.println();
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error printing available cards");
         }
 
@@ -330,6 +324,7 @@ public class PurchaseInterface {
 
             //Check if customer does not have any credit cards
             if (!res.isBeforeFirst()) {
+                Input.clearConsole();
                 System.out.println("No credit cards available");
                 return creditIDs;
             }
@@ -344,7 +339,7 @@ public class PurchaseInterface {
 
                 creditIDs.add(creditID);
 
-                System.out.printf("%-19s%-19s%-19s%-19s\n", creditID, balance, creditLimit, balanceDue);
+                System.out.printf("%-19s%-19s%-19s%-19s\n", creditID, "$" + Input.decimalFormat.format(balance), "$" + Input.decimalFormat.format(creditLimit), "$" + Input.decimalFormat.format(balanceDue));
 
             }
             credit.close();
@@ -352,7 +347,6 @@ public class PurchaseInterface {
 
             System.out.println();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error printing out credit cards");
         }
 
@@ -374,7 +368,6 @@ public class PurchaseInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error getting account ID from debit card");
         }
 
@@ -396,7 +389,6 @@ public class PurchaseInterface {
             getNewVendorID.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error inserting new purchase");
         }
 

@@ -148,10 +148,8 @@ public class DepositWithdrawalInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error trying rollback when inserting deposit transaction");
             }
-            ex.printStackTrace();
             System.out.println("Error inserting deposit transaction");
         }
 
@@ -327,10 +325,8 @@ public class DepositWithdrawalInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error while rolling back withdrawal transaction");
             }
-            ex.printStackTrace();
             System.out.println("Error making withdrawal from account");
         }
 
@@ -357,7 +353,6 @@ public class DepositWithdrawalInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error validating withdrawal");
         }
 
@@ -390,7 +385,6 @@ public class DepositWithdrawalInterface {
                 }
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error comparing savings balance and min_balance");
         }
 
@@ -437,7 +431,6 @@ public class DepositWithdrawalInterface {
             res.close();
             System.out.println();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error printing branches");
         }
 
@@ -486,13 +479,12 @@ public class DepositWithdrawalInterface {
 
                 accountIDs.add(accountID);
 
-                System.out.printf("%-19s%-19s%-19s\n", accountID, interest, balance);
+                System.out.printf("%-19s%-19s%-19s\n", accountID, Input.decimalFormat.format(interest) + "%", "$" + Input.decimalFormat.format(balance));
             }
             checking.close();
             res.close();
             System.out.println();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error printing checking accounts");
         }
 
@@ -528,12 +520,11 @@ public class DepositWithdrawalInterface {
 
                 accountIDs.add(accountID);
 
-                System.out.printf("%-19s%-19s%-19s%-19s\n", accountID, interest, balance, minBalance);
+                System.out.printf("%-19s%-19s%-19s%-19s\n", accountID, Input.decimalFormat.format(interest) + "%", "$" + Input.decimalFormat.format(balance), "$" + Input.decimalFormat.format(minBalance));
             }
             savings.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error printing savings accounts");
         }
 
@@ -555,10 +546,8 @@ public class DepositWithdrawalInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back account deletion");
             }
-            ex.printStackTrace();
             System.out.println("Error deleting account");
         }
         return rowsUpdated;
@@ -594,7 +583,6 @@ public class DepositWithdrawalInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.printf("Error printing tellers");
         }
 
@@ -630,7 +618,6 @@ public class DepositWithdrawalInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.printf("Error printing ATMs");
         }
 
@@ -654,7 +641,6 @@ public class DepositWithdrawalInterface {
             stmt.close();
             res.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error checking for debit card existence");
         }
         return false;

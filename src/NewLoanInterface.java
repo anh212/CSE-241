@@ -147,11 +147,9 @@ public class NewLoanInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back while inserting new unsecured loan");
             }
 
-            ex.printStackTrace();
             System.out.println("Error inserting new unsecured loan");
         }
 
@@ -207,11 +205,9 @@ public class NewLoanInterface {
             try {
                 conn.rollback();
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
                 System.out.println("Error rolling back while inserting new mortgage");
             }
 
-            ex.printStackTrace();
             System.out.println("Error inserting new mortgage");
         }
 
@@ -234,7 +230,6 @@ public class NewLoanInterface {
 
             if (res.next()) return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error trying to validate mortgage address");
         }
         return false;
