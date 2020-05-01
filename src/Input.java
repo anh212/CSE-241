@@ -54,7 +54,7 @@ public class Input {
         }
     }
 
-    public static double getDouble(double max) {
+    public static double getDouble(int max) {
         while(true) {
             try {
                 String input = readInput();
