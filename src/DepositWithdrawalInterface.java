@@ -48,6 +48,12 @@ public class DepositWithdrawalInterface {
         System.out.println("Please enter much would you like to deposit");
         Double withdrawalAmount = Input.getDouble();
 
+        //IF deposit exceeds maximum limit then reject the deposit
+        if(!validateDeposit(withdrawalAmount, accountID, conn)) {
+            System.out.println("Maximum limit for account exceeded!");
+            return 0;
+        }
+
         System.out.println("Here are the branches you can deposit to");
         List<Integer> branchIDs = printAvailableBranches("teller", conn);
 
@@ -354,6 +360,29 @@ public class DepositWithdrawalInterface {
             res.close();
         } catch (SQLException ex) {
             System.out.println("Error validating withdrawal");
+        }
+
+        return true;
+    }
+
+    private static boolean validateDeposit(Double amount, int accountID, Connection conn) {
+        //For deposit check that it does not go over maximum value for balance ($1,000,000)
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM account WHERE account_id = ?");
+            stmt.setInt(1, accountID);
+
+            ResultSet res = stmt.executeQuery();
+
+            if(res.isBeforeFirst()) {
+                if (res.next()) {
+                    double balance = res.getDouble("balance");
+                    if ((double) 1000000 - balance < amount) {
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error validating deposit");
         }
 
         return true;
