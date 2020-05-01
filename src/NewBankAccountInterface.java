@@ -38,7 +38,7 @@ public class NewBankAccountInterface {
 
         //Check that newBalance > min_balance ($100)
         while(true) {
-            newBalance = Input.getDouble(100000);
+            newBalance = Input.getDouble(1000000);
 
             if (newBalance >= 100) break;
             System.out.println("Need minimum balance of $100!");
@@ -64,7 +64,7 @@ public class NewBankAccountInterface {
         int rowsUpdated = 0;
 
         System.out.println("Please enter your initial balance");
-        double newBalance = Input.getDouble(100000);
+        double newBalance = Input.getDouble(1000000);
 
         System.out.println("Please enter your interest rate (Less than 100%): Please enter a decimal value");
         double interestRate;
