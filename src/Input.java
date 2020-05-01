@@ -61,7 +61,7 @@ public class Input {
                 double number = Double.parseDouble(input);
 
                 if (number <= 0 || number >= max) {
-                    System.out.println("Your number is out of range: [0," + Input.decimalFormat.format(max) + "]");
+                    System.out.println("Your number is out of range: (0," + max + ")");
                     continue;
                 }
 
@@ -82,7 +82,7 @@ public class Input {
         while (true) {
             input = getString();
             if (input.length() <= maxLength) return input;
-            System.out.println("Input length needs to be less than or equal to " + Input.decimalFormat.format(maxLength));
+            System.out.println("Input length needs to be less than or equal to " + maxLength);
         }
     }
 
